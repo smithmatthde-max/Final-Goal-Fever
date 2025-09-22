@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       aab_file:
-        description: "Имя файла .aab для заливки"
+        description: "Имя файла .aab для заливки (например: Final_Goal_Fever_1.aab)"
         required: true
         default: "Final_Goal_Fever_1.aab"
+      release_tag:
+        description: "Тег релиза (например: 1.0.0)"
+        required: true
+        default: "1.0.0"
 
 jobs:
   deploy:
@@ -20,9 +24,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p build_output
-          gh release download 1.0.0 \
+          echo "⬇️ Скачиваем файл ${{ github.event.inputs.aab_file }} из релиза ${{ github.event.inputs.release_tag }}"
+          gh release download ${{ github.event.inputs.release_tag }} \
             --pattern "${{ github.event.inputs.aab_file }}" \
             --dir build_output
+          mv "build_output/${{ github.event.inputs.aab_file }}" build_output/app.aab
+          ls -lh build_output
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
