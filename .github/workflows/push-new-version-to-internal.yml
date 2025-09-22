@@ -33,3 +33,5 @@ jobs:
         run: |
           export GOOGLE_PLAY_JSON_KEY="$(echo "$GOOGLE_PLAY_JSON_KEY")"
           fastlane android upload_to_internal
+        working-directory: .github/fastlane
+
