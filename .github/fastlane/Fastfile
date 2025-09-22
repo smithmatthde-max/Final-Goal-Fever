@@ -3,7 +3,7 @@ platform :android do
     supply(
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"], # або замість ENV — просто шлях до створеного JSON-файлу з ключем від Google Cloud Console
       package_name: "com.finalgoalfever.game",       # Bundle-ID створеного в консолі андроїд додатку
-      aab: "build_output/Final Goal Fever_1.aab", # шлях до aab після завантаження його туди у workflow з GitHub Releases
+      aab: "build_output/Final_Goal_Fever_1.aab", # шлях до aab після завантаження його туди у workflow з GitHub Releases
       track: "internal",
       release_status: "completed",                 # обов’язково, щоб реліз став видимий
       skip_upload_changelogs: false,
