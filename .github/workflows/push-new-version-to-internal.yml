@@ -16,7 +16,7 @@ jobs:
         run: |
           mkdir -p build_output
           gh release download 1.0.0 \
-            --pattern "Goal_Storm_Arena_1.aab" \
+            --pattern "Final_Goal_Fever_1.aab" \
             --dir build_output
 
       - name: Setup Ruby
