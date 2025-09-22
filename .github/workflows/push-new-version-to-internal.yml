@@ -24,14 +24,27 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p build_output
-          echo "⬇️ Скачиваем ${{ github.event.inputs.aab_file }} из релиза ${{ github.event.inputs.release_tag }}"
+          echo "⬇️ Скачиваем файл ${{ github.event.inputs.aab_file }} из релиза ${{ github.event.inputs.release_tag }}"
+          
+          # Скачиваем .aab
           gh release download ${{ github.event.inputs.release_tag }} \
             --pattern "${{ github.event.inputs.aab_file }}" \
-            --dir build_output
-          echo "📂 Файлы после скачивания:"
-          ls -lh build_output
-          mv "build_output/${{ github.event.inputs.aab_file }}" build_output/app.aab
-          echo "📂 Файлы после переименования:"
+            --dir build_output || true
+
+          echo "📂 Содержимое build_output сразу после скачивания:"
+          ls -lh build_output || true
+
+          # Проверяем, скачался ли файл
+          if [ -f "build_output/${{ github.event.inputs.aab_file }}" ]; then
+            mv "build_output/${{ github.event.inputs.aab_file }}" build_output/app.aab
+            echo "✅ Переименовали в app.aab"
+          else
+            echo "❌ Файл ${{ github.event.inputs.aab_file }} не найден после скачивания!"
+            echo "Проверь, совпадает ли имя файла в GitHub Release."
+            exit 1
+          fi
+
+          echo "📂 Содержимое build_output после mv:"
           ls -lh build_output
 
       - name: Setup Ruby
@@ -48,5 +61,7 @@ jobs:
           AAB_FILE: ${{ github.event.inputs.aab_file }}
         run: |
           export GOOGLE_PLAY_JSON_KEY="$(echo "$GOOGLE_PLAY_JSON_KEY")"
+          echo "🚀 Запускаем fastlane, ожидаем build_output/app.aab"
+          ls -lh build_output
           fastlane android upload_to_internal
         working-directory: .github/fastlane
