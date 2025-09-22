@@ -2,6 +2,11 @@ name: Push new version to Internal
 
 on:
   workflow_dispatch:
+    inputs:
+      aab_file:
+        description: "Имя файла .aab для заливки"
+        required: true
+        default: "Final_Goal_Fever_1.aab"
 
 jobs:
   deploy:
@@ -16,7 +21,7 @@ jobs:
         run: |
           mkdir -p build_output
           gh release download 1.0.0 \
-            --pattern "*.aab" \
+            --pattern "${{ github.event.inputs.aab_file }}" \
             --dir build_output
 
       - name: Setup Ruby
@@ -30,8 +35,8 @@ jobs:
       - name: Run Fastlane uploading
         env:
           GOOGLE_PLAY_JSON_KEY: ${{ secrets.GOOGLE_PLAY_JSON_KEY }}
+          AAB_FILE: ${{ github.event.inputs.aab_file }}
         run: |
           export GOOGLE_PLAY_JSON_KEY="$(echo "$GOOGLE_PLAY_JSON_KEY")"
           fastlane android upload_to_internal
         working-directory: .github/fastlane
-
