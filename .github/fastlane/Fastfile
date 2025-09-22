@@ -1,15 +1,11 @@
 platform :android do
   lane :upload_to_internal do
-    # Берём имя файла из переменной окружения, либо дефолт
-    aab_file = ENV["AAB_FILE"] || "Final_Goal_Fever_1.aab"
-    UI.message("➡️ Uploading AAB file: #{aab_file}")
-
     supply(
-      json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"], # JSON-ключ из GitHub Secrets
-      package_name: "com.finalgoalfever.game",    # твой package name
-      aab: "build_output/app.aab",                # ВСЕГДА один и тот же путь
+      json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"], # або замість ENV — просто шлях до створеного JSON-файлу з ключем від Google Cloud Console
+      package_name: "com.finalgoalfever.game",       # Bundle-ID створеного в консолі андроїд додатку
+      aab: "build_output/Final_Goal_Fever_1.aab", # шлях до aab після завантаження його туди у workflow з GitHub Releases
       track: "internal",
-      release_status: "completed",                # релиз сразу активен
+      release_status: "completed",                 # обов’язково, щоб реліз став видимий
       skip_upload_changelogs: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
