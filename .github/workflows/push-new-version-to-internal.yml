@@ -2,15 +2,6 @@ name: Push new version to Internal
 
 on:
   workflow_dispatch:
-    inputs:
-      aab_file:
-        description: "Имя файла .aab для заливки (например: Final_Goal_Fever_1.aab)"
-        required: true
-        default: "Final_Goal_Fever_1.aab"
-      release_tag:
-        description: "Тег релиза (например: 1.0.0 или v1.0.0)"
-        required: true
-        default: "1.0.0"
 
 jobs:
   deploy:
@@ -19,35 +10,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Create build_output dir
-        run: mkdir -p build_output
-
       - name: Download AAB from GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "⬇️ Список файлов в релизе ${{ github.event.inputs.release_tag }}:"
-          gh release view ${{ github.event.inputs.release_tag }} --json assets --jq '.assets[].name'
-
-          echo "⬇️ Скачиваем файл ${{ github.event.inputs.aab_file }}"
-          gh release download ${{ github.event.inputs.release_tag }} \
-            --pattern "${{ github.event.inputs.aab_file }}" \
-            --dir build_output --clobber || true
-
-          echo "📂 Содержимое build_output сразу после скачивания:"
-          ls -lh build_output || true
-
-          if [ -f "build_output/${{ github.event.inputs.aab_file }}" ]; then
-            mv "build_output/${{ github.event.inputs.aab_file }}" build_output/app.aab
-            echo "✅ Успешно переименовали в app.aab"
-          else
-            echo "❌ Файл ${{ github.event.inputs.aab_file }} не найден после скачивания!"
-            echo "Проверь имя файла в релизе и во вводе workflow_dispatch."
-            exit 1
-          fi
-
-          echo "📂 Содержимое build_output после mv:"
-          ls -lh build_output
+          mkdir -p build_output
+          gh release download 1.0.0 \
+            --pattern "*.aab" \
+            --dir build_output
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -62,7 +32,4 @@ jobs:
           GOOGLE_PLAY_JSON_KEY: ${{ secrets.GOOGLE_PLAY_JSON_KEY }}
         run: |
           export GOOGLE_PLAY_JSON_KEY="$(echo "$GOOGLE_PLAY_JSON_KEY")"
-          echo "🚀 Запускаем Fastlane. Ожидаем файл build_output/app.aab"
-          ls -lh build_output
           fastlane android upload_to_internal
-        working-directory: .github/fastlane
