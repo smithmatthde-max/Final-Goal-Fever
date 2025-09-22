@@ -24,11 +24,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p build_output
-          echo "⬇️ Скачиваем файл ${{ github.event.inputs.aab_file }} из релиза ${{ github.event.inputs.release_tag }}"
+          echo "⬇️ Скачиваем ${{ github.event.inputs.aab_file }} из релиза ${{ github.event.inputs.release_tag }}"
           gh release download ${{ github.event.inputs.release_tag }} \
             --pattern "${{ github.event.inputs.aab_file }}" \
             --dir build_output
+          echo "📂 Файлы после скачивания:"
+          ls -lh build_output
           mv "build_output/${{ github.event.inputs.aab_file }}" build_output/app.aab
+          echo "📂 Файлы после переименования:"
           ls -lh build_output
 
       - name: Setup Ruby
