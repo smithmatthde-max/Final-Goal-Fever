@@ -15,8 +15,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p build_output
-          gh release download 1.0.0 \
-            --pattern "Final_Goal_Fever_1.aab" \
+          gh release download 2.0.0 \
+            --pattern "Final_Goal_Fever_2.aab" \
             --dir build_output
 
       - name: Setup Ruby
